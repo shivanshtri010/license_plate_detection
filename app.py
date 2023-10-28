@@ -17,7 +17,9 @@ def detect_objects():
         image_file.save(image_path)
 
         data = request.form.to_dict()
-        response = requests.post(DETECTION_URL, data=data, files={'image': open(image_path, 'rb')})
+        with open(image_path, 'rb') as image_data:
+            files = {'image': (image_path, image_data, 'image/jpeg')}
+            response = requests.post(DETECTION_URL, data=data, files=files)
 
         if response.status_code == 200:
             return jsonify(response.json())
@@ -25,4 +27,4 @@ def detect_objects():
             return jsonify({'error': 'Failed to detect license plates'})
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host='0.0.0.0', port=5000,debug=True)  # Change the port number if needed
